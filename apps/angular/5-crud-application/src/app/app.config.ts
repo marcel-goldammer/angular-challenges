@@ -1,6 +1,7 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
+import { ErrorInterceptor } from './data-access/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHttpClient()],
+  providers: [provideHttpClient(withInterceptors([ErrorInterceptor]))],
 };
