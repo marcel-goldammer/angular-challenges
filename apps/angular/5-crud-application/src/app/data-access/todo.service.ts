@@ -29,7 +29,7 @@ export class TodoService {
     );
   }
 
-  delete(todo: Todo) {
+  deleteTodo(todo: Todo) {
     return this.http.delete<void>(
       `https://jsonplaceholder.typicode.com/todos/${todo.id}`,
     );

@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
   }
 
   delete(todo: Todo): void {
-    this.todoService.delete(todo).subscribe(() => {
+    this.todoService.deleteTodo(todo).subscribe(() => {
       this.store.delete(todo);
     });
   }
