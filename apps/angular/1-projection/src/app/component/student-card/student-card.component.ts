@@ -1,18 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { FakeHttpService } from '../../data-access/fake-http.service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
+import {
+  FakeHttpService,
+  randStudent,
+} from '../../data-access/fake-http.service';
 import { StudentStore } from '../../data-access/student.store';
-import { CardType } from '../../model/card.model';
-import { Student } from '../../model/student.model';
 import { CardComponent } from '../../ui/card/card.component';
+import { ListItemComponent } from '../../ui/list-item/list-item.component';
 
 @Component({
   selector: 'app-student-card',
   template: `
-    <app-card [list]="students" [type]="cardType" class="bg-light-green">
+    <app-card
+      [list]="students()"
+      class="bg-light-green"
+      (add)="addNewStudent()">
       <img src="assets/img/student.webp" width="200px" />
+      <ng-template #itemTemplate let-student>
+        <app-list-item
+          [name]="student.firstName"
+          (delete)="deleteStudent(student.id)" />
+      </ng-template>
     </app-card>
   `,
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       .bg-light-green {
@@ -20,20 +36,23 @@ import { CardComponent } from '../../ui/card/card.component';
       }
     `,
   ],
-  imports: [CardComponent],
+  imports: [CardComponent, ListItemComponent],
 })
 export class StudentCardComponent implements OnInit {
-  students: Student[] = [];
-  cardType = CardType.STUDENT;
+  private http = inject(FakeHttpService);
+  private store = inject(StudentStore);
 
-  constructor(
-    private http: FakeHttpService,
-    private store: StudentStore,
-  ) {}
+  students = this.store.students;
 
   ngOnInit(): void {
     this.http.fetchStudents$.subscribe((s) => this.store.addAll(s));
+  }
 
-    this.store.students$.subscribe((s) => (this.students = s));
+  addNewStudent() {
+    this.store.addOne(randStudent());
+  }
+
+  deleteStudent(id: number) {
+    this.store.deleteOne(id);
   }
 }
