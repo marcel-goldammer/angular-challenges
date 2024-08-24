@@ -5,19 +5,26 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoadingStore } from './data-access/loading.store';
 import { TodoService } from './data-access/todo.service';
 import { TodoStore } from './data-access/todo.store';
 import { Todo } from './model/todo.model';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatProgressSpinnerModule],
   selector: 'app-root',
   template: `
-    <div *ngFor="let todo of todos()">
-      {{ todo.title }}
-      <button (click)="update(todo)">Update</button>
-    </div>
+    @if (loadingStore.loading()) {
+      <mat-progress-spinner mode="indeterminate" />
+    }
+    @for (todo of todos(); track todo.id) {
+      <div>
+        {{ todo.title }}
+        <button (click)="update(todo)">Update</button>
+      </div>
+    }
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +33,7 @@ export class AppComponent implements OnInit {
   private todoService = inject(TodoService);
   private store = inject(TodoStore);
 
+  loadingStore = inject(LoadingStore);
   todos = this.store.todos;
 
   ngOnInit(): void {
