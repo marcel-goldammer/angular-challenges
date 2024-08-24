@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { randText } from '@ngneat/falso';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { TodoService } from './data-access/todo.service';
+import { TodoStore } from './data-access/todo.store';
 import { Todo } from './model/todo.model';
 
 @Component({
@@ -9,44 +14,29 @@ import { Todo } from './model/todo.model';
   imports: [CommonModule],
   selector: 'app-root',
   template: `
-    <div *ngFor="let todo of todos">
+    <div *ngFor="let todo of todos()">
       {{ todo.title }}
       <button (click)="update(todo)">Update</button>
     </div>
   `,
   styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  todos!: Todo[];
+  private todoService = inject(TodoService);
+  private store = inject(TodoStore);
 
-  constructor(private http: HttpClient) {}
+  todos = this.store.todos;
 
   ngOnInit(): void {
-    this.http
-      .get<Todo[]>('https://jsonplaceholder.typicode.com/todos')
-      .subscribe((todos) => {
-        this.todos = todos;
-      });
+    this.todoService.getTodos().subscribe((todos) => {
+      this.store.addAll(todos);
+    });
   }
 
   update(todo: Todo) {
-    this.http
-      .put<Todo>(
-        `https://jsonplaceholder.typicode.com/todos/${todo.id}`,
-        JSON.stringify({
-          todo: todo.id,
-          userId: todo.userId,
-          title: randText(),
-          completed: todo.completed,
-        }),
-        {
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          },
-        },
-      )
-      .subscribe((todoUpdated: Todo) => {
-        this.todos[todoUpdated.id - 1] = todoUpdated;
-      });
+    this.todoService.updateTodo(todo).subscribe((updated: Todo) => {
+      this.store.update(updated);
+    });
   }
 }
