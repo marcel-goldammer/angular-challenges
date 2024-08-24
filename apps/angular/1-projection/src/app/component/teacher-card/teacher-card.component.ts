@@ -8,13 +8,13 @@ import { CardComponent } from '../../ui/card/card.component';
 @Component({
   selector: 'app-teacher-card',
   template: `
-    <app-card [list]="teachers" [type]="cardType" customClass="bg-light-red">
+    <app-card [list]="teachers" [type]="cardType" class="bg-light-red">
       <img src="assets/img/teacher.png" width="200px" />
     </app-card>
   `,
   styles: [
     `
-      ::ng-deep .bg-light-red {
+      .bg-light-red {
         background-color: rgba(250, 0, 0, 0.1);
       }
     `,
