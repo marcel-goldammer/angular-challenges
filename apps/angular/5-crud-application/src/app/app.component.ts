@@ -23,6 +23,7 @@ import { Todo } from './model/todo.model';
       <div>
         {{ todo.title }}
         <button (click)="update(todo)">Update</button>
+        <button (click)="delete(todo)">Delete</button>
       </div>
     }
   `,
@@ -42,9 +43,15 @@ export class AppComponent implements OnInit {
     });
   }
 
-  update(todo: Todo) {
+  update(todo: Todo): void {
     this.todoService.updateTodo(todo).subscribe((updated: Todo) => {
       this.store.update(updated);
+    });
+  }
+
+  delete(todo: Todo): void {
+    this.todoService.delete(todo).subscribe(() => {
+      this.store.delete(todo);
     });
   }
 }

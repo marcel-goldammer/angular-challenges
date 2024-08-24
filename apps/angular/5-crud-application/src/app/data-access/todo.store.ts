@@ -14,4 +14,8 @@ export class TodoStore {
       todos.map((t) => (t.id === todo.id ? todo : t)),
     );
   }
+
+  delete(todo: Todo) {
+    this.todos.update((todos) => todos.filter((t) => t.id !== todo.id));
+  }
 }
