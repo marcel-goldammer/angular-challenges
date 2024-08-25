@@ -1,47 +1,32 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LoadingStore } from './data-access/loading.store';
+import { TodoItemComponent } from './component/todo-item.component';
 import { TodoService } from './data-access/todo.service';
 import { TodoStore } from './data-access/todo.store';
 import { Todo } from './model/todo.model';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MatProgressSpinnerModule, TodoItemComponent],
   selector: 'app-root',
   template: `
-    @if (loadingStore.loading()) {
-      <mat-progress-spinner mode="indeterminate" />
+    @if (loading()) {
+      <mat-spinner />
     }
     @for (todo of todos(); track todo.id) {
-      <div>
-        {{ todo.title }}
-        <button (click)="update(todo)">Update</button>
-        <button (click)="delete(todo)">Delete</button>
-      </div>
+      <app-todo-item [todo]="todo" />
     }
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private todoService = inject(TodoService);
   private store = inject(TodoStore);
 
-  loadingStore = inject(LoadingStore);
   todos = this.store.todos;
-
-  ngOnInit(): void {
-    this.todoService.getTodos().subscribe((todos) => {
-      this.store.addAll(todos);
-    });
-  }
+  loading = this.store.loading;
 
   update(todo: Todo): void {
     this.todoService.updateTodo(todo).subscribe((updated: Todo) => {
