@@ -54,6 +54,10 @@
       "files": "*.json",
       "parser": "jsonc-eslint-parser",
       "rules": {}
+    },
+    {
+      "files": ["*.ts"],
+      "extends": ["plugin:@ngrx/all"]
     }
   ]
 }

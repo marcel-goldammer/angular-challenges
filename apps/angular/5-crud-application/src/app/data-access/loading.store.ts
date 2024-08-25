@@ -1,18 +1,14 @@
-import { Injectable, signal } from '@angular/core';
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 
-@Injectable({ providedIn: 'root' })
-export class LoadingStore {
-  #loading = signal(false);
-
-  get loading() {
-    return this.#loading.asReadonly();
-  }
-
-  start() {
-    this.#loading.set(true);
-  }
-
-  stop() {
-    this.#loading.set(false);
-  }
-}
+export const LoadingStore = signalStore(
+  { providedIn: 'root' },
+  withState({ loading: false }),
+  withMethods((state) => ({
+    start(): void {
+      patchState(state, { loading: true });
+    },
+    stop(): void {
+      patchState(state, { loading: false });
+    },
+  })),
+);
